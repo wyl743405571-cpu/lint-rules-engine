@@ -1,0 +1,732 @@
+{
+  "errors": [
+    {
+      "id": "py-nonetype-attr",
+      "title": "TypeError: 'NoneType' object has no attribute",
+      "lang": "Python",
+      "pattern": "TypeError:\\s*'NoneType' object has no attribute",
+      "cause": "A variable you expected to hold an object is `None`, and you called a method/attribute on it. Common with functions that return None on failure paths, dict.get() defaults, or API calls that returned nothing.",
+      "fix": "Before accessing, check the value: `if obj is not None:`. Then trace WHY it is None - find the function that produced it and check its failure/early-return paths.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#TypeError"
+    },
+    {
+      "id": "py-modulenotfound",
+      "title": "ModuleNotFoundError: No module named",
+      "lang": "Python",
+      "pattern": "ModuleNotFoundError:\\s*No module named",
+      "cause": "Python cannot find the module: it is not installed in the current environment, or you are running with a different interpreter/venv than the one where it is installed.",
+      "fix": "In the SAME shell run `which python` (or `where python` on Windows) to confirm the interpreter, then `python -m pip install <module>`. If using a venv, activate it first. For local packages check the folder is on sys.path.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#ModuleNotFoundError"
+    },
+    {
+      "id": "py-import-circular",
+      "title": "ImportError: cannot import name (circular import)",
+      "lang": "Python",
+      "pattern": "ImportError:\\s*cannot import name",
+      "cause": "Most often a circular import: module A imports B while B (directly or transitively) imports A back, so one of them is only half-initialized when the import runs.",
+      "fix": "Move the offending import inside the function that uses it (lazy import), or restructure so the shared code lives in a third module both can import.",
+      "ref": "https://docs.python.org/3/tutorial/errors.html"
+    },
+    {
+      "id": "py-keyerror",
+      "title": "KeyError",
+      "lang": "Python",
+      "pattern": "\\bKeyError[\\s(:][\\w'\\\"(]?[\\w'\\\"]*",
+      "cause": "You accessed a dict key that does not exist in that dictionary.",
+      "fix": "Use `d.get(key, default)` when absence is normal, or check `if key in d:`. If the key SHOULD exist, print the dict (or its keys) right before the failing line - usually an upstream typo or a different data shape than expected.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#KeyError"
+    },
+    {
+      "id": "py-indexerror",
+      "title": "IndexError: list index out of range",
+      "lang": "Python",
+      "pattern": "IndexError:\\s*list index out of range",
+      "cause": "You indexed a list past its end - typically an empty list (index 0 of []) or an off-by-one loop bound.",
+      "fix": "Check `len(lst)` before indexing, or iterate with `for item in lst` instead of by index. An empty list usually means the upstream query/parse returned nothing.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#IndexError"
+    },
+    {
+      "id": "py-attrerror",
+      "title": "AttributeError: object has no attribute",
+      "lang": "Python",
+      "pattern": "AttributeError:\\s*[\\w'\\\"]+ object has no attribute",
+      "cause": "The object's real type does not have that attribute - usually because the variable holds a different type than you assume (e.g. a module shadowed by a local variable, a str where you expected an object, or a partial import).",
+      "fix": "Print `type(obj)` right before the failing line. Watch out for a local file/folder named the same as an imported module - that shadows it.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#AttributeError"
+    },
+    {
+      "id": "py-indent",
+      "title": "IndentationError / TabError",
+      "lang": "Python",
+      "pattern": "(IndentationError|TabError):",
+      "cause": "Mixed tabs and spaces, or inconsistent indentation levels. Python treats indentation as syntax.",
+      "fix": "Configure your editor to insert spaces (PEP 8: 4 spaces) and convert existing tabs. In vim: `:set expandtab ts=4 retab`. In VS Code the bottom-right indicator switches Tab Size / Spaces.",
+      "ref": "https://peps.python.org/pep-0008/#indentation"
+    },
+    {
+      "id": "py-recursion",
+      "title": "RecursionError: maximum recursion depth exceeded",
+      "lang": "Python",
+      "pattern": "RecursionError:\\s*maximum recursion depth",
+      "cause": "A function calls itself without a reachable base case - or two functions call each other in an infinite mutual recursion.",
+      "fix": "Identify the recursive function and add/verify the base case that stops recursion. If recursion depth is legitimately large, raise the limit with `sys.setrecursionlimit()` or rewrite iteratively.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#RecursionError"
+    },
+    {
+      "id": "py-valueerror-convert",
+      "title": "ValueError: could not convert string to (int|float)",
+      "lang": "Python",
+      "pattern": "ValueError:\\s*could not convert string to (int|float)",
+      "cause": "You called int()/float() on a string that is not a clean number - usually user input, a CSV cell with spaces/quotes, or an empty string.",
+      "fix": "Strip first: `float(s.strip())` and handle empties: `if not s: ...`. For user-facing input wrap in try/except and show a friendly message.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#ValueError"
+    },
+    {
+      "id": "py-zerodiv",
+      "title": "ZeroDivisionError",
+      "lang": "Python",
+      "pattern": "ZeroDivisionError",
+      "cause": "A division or modulo by zero - a denominator computed as 0, often from an empty aggregate (sum of nothing, count of zero).",
+      "fix": "Guard the denominator: `if n: avg = total / n else: ...`. Find where the zero comes from before papering over it.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#ZeroDivisionError"
+    },
+    {
+      "id": "py-permerr",
+      "title": "PermissionError: [Errno 13]",
+      "lang": "Python",
+      "pattern": "(\\[Errno 13\\][^\\n]*PermissionError|PermissionError[^\\n]*\\[Errno 13\\])",
+      "cause": "The OS denied file/directory access: wrong owner, read-only path, or you are writing where you lack permission (e.g. / or /usr on Linux).",
+      "fix": "Check `ls -l` ownership of the target. Run as the right user (avoid blanket sudo), or write to a path your user owns. On Windows check the file is not open in another program.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#PermissionError"
+    },
+    {
+      "id": "py-filenotfound",
+      "title": "FileNotFoundError: [Errno 2]",
+      "lang": "Python",
+      "pattern": "FileNotFoundError:\\s*\\[Errno 2\\]",
+      "cause": "The file or directory path does not exist at the location Python looked for it - almost always a relative-path vs working-directory mismatch.",
+      "fix": "Use absolute paths or anchor to the script: `Path(__file__).parent / 'data.json'`. Print `os.getcwd()` to see where the process actually runs.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#FileNotFoundError"
+    },
+    {
+      "id": "py-brokenpipe",
+      "title": "BrokenPipeError / ConnectionResetError",
+      "lang": "Python",
+      "pattern": "(BrokenPipeError|ConnectionResetError)",
+      "cause": "The other end of the socket closed before/while you wrote or read. Common when a client aborts a download or a server restarts.",
+      "fix": "Catch the exception around socket writes and treat as client-gone. For servers, log and continue - this is normally not a bug in your code.",
+      "ref": "https://docs.python.org/3/library/exceptions.html#BrokenPipeError"
+    },
+    {
+      "id": "py-unicodedecode",
+      "title": "UnicodeDecodeError: 'utf-8' codec can't decode",
+      "lang": "Python",
+      "pattern": "UnicodeDecodeError:\\s*'.*'? codec can't decode",
+      "cause": "You are decoding bytes that are not valid UTF-8 (GBK/Latin-1 files, Windows-1252 exports, or binary data opened as text).",
+      "fix": "Open with the real encoding: `open(f, encoding='gbk')` / `latin-1`, or detect it (chardet). For binary files open in 'rb' mode.",
+      "ref": "https://docs.python.org/3/howto/unicode.html"
+    },
+    {
+      "id": "py-pip-externally-managed",
+      "title": "pip: externally-managed-environment",
+      "lang": "Python",
+      "pattern": "externally-managed-environment",
+      "cause": "Newer distros (Debian 12+, Ubuntu 23.04+) protect the system Python; pip refuses to install into it.",
+      "fix": "Create a venv: `python3 -m venv .venv && source .venv/bin/activate && pip install ...`, or use `pipx` for CLI tools, or add `--break-system-packages` only if you really know.",
+      "ref": "https://pip.pypa.io/en/stable/topics/vcs-support/"
+    },
+    {
+      "id": "py-ssl-verify",
+      "title": "SSLError: certificate verify failed",
+      "lang": "Python",
+      "pattern": "(SSLError|ssl\\.SSLCertVerificationError|certificate verify failed)",
+      "cause": "Python cannot verify the server's TLS chain: missing system CA store, corporate proxy MITM, outdated certifi, or a self-signed cert.",
+      "fix": "First fix the cause: update certifi (`pip install -U certifi`), check system time. Corporate proxy: export REQUESTS_CA_BUNDLE to the proxy CA. As a LAST resort only, verify=False (never in production).",
+      "ref": "https://requests.readthedocs.io/en/latest/user/advanced/#ssl-verification"
+    },
+    {
+      "id": "py-flask-context",
+      "title": "Flask: Working outside of application context",
+      "lang": "Python",
+      "pattern": "Working outside of application context",
+      "cause": "You used something that needs the Flask app (current_app, db, request) outside a request/setup - typically in a script, a background thread, or module import time.",
+      "fix": "In scripts/CLI wrap code with `with app.app_context():`. In threads pass needed values in as arguments instead of touching request.",
+      "ref": "https://flask.palletsprojects.com/en/stable/appcontext/"
+    },
+    {
+      "id": "js-undef-prop",
+      "title": "TypeError: Cannot read properties of undefined",
+      "lang": "JavaScript",
+      "pattern": "Cannot read propert(y|ies) of (undefined|null)",
+      "cause": "You accessed `.something` on undefined/null - the object was never set, the async data has not arrived yet, or a typo in the property chain.",
+      "fix": "Optional-chain defensively: `obj?.a?.b`, and find where the object should have been created. For async data, render only after it arrives (loading state / guards).",
+      "ref": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_property"
+    },
+    {
+      "id": "js-not-a-function",
+      "title": "TypeError: X is not a function",
+      "lang": "JavaScript",
+      "pattern": "is not a function",
+      "cause": "The name you called is not a function on that object: wrong import shape (default vs named), a variable shadowing the function, or the method does not exist in that runtime/version.",
+      "fix": "console.log the object itself. Check import syntax: `import x from` vs `import { x } from`. For browser APIs check compatibility (some exist only in newer runtimes).",
+      "ref": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Not_a_function"
+    },
+    {
+      "id": "js-json-unexpected-token",
+      "title": "SyntaxError: Unexpected token < in JSON",
+      "lang": "JavaScript",
+      "pattern": "Unexpected token ('?<|u)'?.*in JSON|Unexpected end of JSON input",
+      "cause": "`<` means the server returned HTML (an error page, a login redirect, a 404) but you called response.json(). The API did not answer with JSON.",
+      "fix": "Log `await response.text()` before parsing to see what actually came back. Check the request URL, method, auth headers, and the server's error/redirect behavior. Then parse conditionally based on content-type.",
+      "ref": "https://developer.mozilla.org/en-US/docs/Web/API/Response/json"
+    },
+    {
+      "id": "js-cors",
+      "title": "blocked by CORS policy",
+      "lang": "JavaScript",
+      "pattern": "blocked by CORS policy|Cross-Origin Request Blocked",
+      "cause": "The browser blocked a cross-origin fetch because the server did not send permissive Access-Control-Allow-Origin headers for your origin. This is enforced client-side; it is a SERVER configuration issue.",
+      "fix": "On the API server add CORS headers for your origin (e.g. flask-cors, cors npm package) - allowing credentials requires an explicit origin, not `*`. A proxy through your own backend also sidesteps it.",
+      "ref": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+    },
+    {
+      "id": "js-eaddrinuse",
+      "title": "Node: EADDRINUSE: address already in use",
+      "lang": "Node.js",
+      "pattern": "EADDRINUSE",
+      "cause": "Another process is already listening on that port - usually a previous instance of your app that did not exit.",
+      "fix": "Find it: `lsof -i :3000` (mac/linux) or `netstat -ano | findstr :3000` (Windows), kill the stale PID. Or run the new instance on another port.",
+      "ref": "https://nodejs.org/api/errors.html#errors_common_system_errors"
+    },
+    {
+      "id": "js-econnrefused",
+      "title": "ECONNREFUSED",
+      "lang": "Node.js",
+      "pattern": "ECONNREFUSED",
+      "cause": "Nothing is listening on the host:port you tried to connect to - the target service is down, the host/port is wrong, or a container/localhost network boundary is in the way.",
+      "fix": "Verify the service is running and on that port (`curl host:port`). Inside Docker compose use the service name, not localhost. Check firewall/security-group rules.",
+      "ref": "https://nodejs.org/api/errors.html#errors_common_system_errors"
+    },
+    {
+      "id": "npm-eresolve",
+      "title": "npm ERR! ERESOLVE / peer dependency conflict",
+      "lang": "npm",
+      "pattern": "(ERESOLVE|could not resolve dependency|peer dep)",
+      "cause": "Two packages demand incompatible versions of the same peer dependency - common after upgrading React or a major library.",
+      "fix": "Read the conflict report: either upgrade the conflicting package, or as an escape hatch `npm install --legacy-peer-deps`. Clean state first: delete node_modules + package-lock.json and reinstall.",
+      "ref": "https://docs.npmjs.com/cli/v10/commands/npm-install"
+    },
+    {
+      "id": "js-module-not-found",
+      "title": "Module not found: Error: Can't resolve",
+      "lang": "Bundler",
+      "pattern": "Module not found: (Error: )?Can't resolve",
+      "cause": "Webpack/Vite cannot resolve an import path: wrong relative path, missing file extension config, or the package is not installed.",
+      "fix": "Check the exact path and case (case-sensitive on Linux/CI!). `npm install` the missing package. For alias imports (@/...) verify the bundler alias config.",
+      "ref": "https://webpack.js.org/concepts/modules/"
+    },
+    {
+      "id": "ts-possibly-undefined",
+      "title": "TS: Object is possibly 'undefined'",
+      "lang": "TypeScript",
+      "pattern": "Object is possibly '(undefined|null)'",
+      "cause": "With strictNullChecks, TS proves the value could be null/undefined at that point and forces you to handle it.",
+      "fix": "Narrow it: `if (x === undefined) return;`, use optional chaining `x?.y`, or provide a default `x ?? fallback`. Do NOT blanket-suppress with `!` unless you truly guarantee it.",
+      "ref": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+    },
+    {
+      "id": "ts-prop-not-exist",
+      "title": "TS: Property 'X' does not exist on type",
+      "lang": "TypeScript",
+      "pattern": "Property '.*' does not exist on type",
+      "cause": "The declared type does not include that property: wrong type annotation, an untyped/any-shaped API response, or a missing interface field.",
+      "fix": "Update the interface/type to match reality, or narrow with a type guard. For dynamic API payloads define the response type explicitly instead of casting.",
+      "ref": "https://www.typescriptlang.org/docs/handbook/2/objects.html"
+    },
+    {
+      "id": "react-key-prop",
+      "title": "React: Each child in a list should have a unique key",
+      "lang": "React",
+      "pattern": "unique .key. prop",
+      "cause": "React needs a stable identity for list items to reconcile renders efficiently.",
+      "fix": "Give each element a stable unique key: `items.map(i => <Row key={i.id} />)`. Use the item's natural id - NOT the array index when the list can reorder.",
+      "ref": "https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key"
+    },
+    {
+      "id": "react-max-depth",
+      "title": "React: Maximum update depth exceeded",
+      "lang": "React",
+      "pattern": "Maximum update depth exceeded",
+      "cause": "A setState is being called inside render or inside an effect with unstable dependencies, causing an infinite re-render loop.",
+      "fix": "Look for setState called unconditionally in useEffect or during render. Fix dependencies or move the update behind a condition/event.",
+      "ref": "https://react.dev/errors"
+    },
+    {
+      "id": "git-not-repo",
+      "title": "Git: fatal: not a git repository",
+      "lang": "Git",
+      "pattern": "fatal: not a git repository",
+      "cause": "You are in a folder that is not inside a git working tree (or .git was deleted, or you are one directory level off).",
+      "fix": "`cd` to the project root and `ls -a` to confirm .git exists. If missing entirely, re-init and re-add the remote; if you are in a subfolder, go up.",
+      "ref": "https://git-scm.com/docs/git-init"
+    },
+    {
+      "id": "git-push-rejected",
+      "title": "Git: failed to push some refs (remote ahead)",
+      "lang": "Git",
+      "pattern": "failed to push some refs",
+      "cause": "The remote has commits you do not have locally - git refuses to overwrite history.",
+      "fix": "`git pull --rebase` (or fetch + rebase your branch), resolve any conflicts, then push again. Never `--force` on shared branches.",
+      "ref": "https://git-scm.com/docs/git-push"
+    },
+    {
+      "id": "git-publickey",
+      "title": "Git/SSH: Permission denied (publickey)",
+      "lang": "Git",
+      "pattern": "Permission denied \\(publickey",
+      "cause": "SSH could not authenticate: the key is not loaded, not registered on the host (GitHub/GitLab), or ssh is offering the wrong key.",
+      "fix": "`ssh -T git@github.com` to test. Generate with `ssh-keygen`, add the public key to your account, ensure the agent has it (`ssh-add`), and confirm the remote uses SSH (git@) not HTTPS.",
+      "ref": "https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey"
+    },
+    {
+      "id": "git-unrelated-histories",
+      "title": "Git: refusing to merge unrelated histories",
+      "lang": "Git",
+      "pattern": "refusing to merge unrelated histories",
+      "cause": "The two branches have no common ancestor - typical when a repo was initialized twice (e.g. local git init + a remote that got its own README commit).",
+      "fix": "If you are sure: `git pull origin main --allow-unrelated-histories`, resolve conflicts, commit. Otherwise reset to the correct history first.",
+      "ref": "https://git-scm.com/docs/git-merge"
+    },
+    {
+      "id": "git-detached-head",
+      "title": "Git: detached HEAD state",
+      "lang": "Git",
+      "pattern": "detached HEAD",
+      "cause": "HEAD points at a commit instead of a branch - fine for looking around, but new commits will be orphaned.",
+      "fix": "To keep working: `git switch -c new-branch` from here; to go back: `git switch main`.",
+      "ref": "https://git-scm.com/docs/git-checkout"
+    },
+    {
+      "id": "docker-daemon",
+      "title": "Cannot connect to the Docker daemon",
+      "lang": "Docker",
+      "pattern": "Cannot connect to the Docker daemon|docker daemon is not running",
+      "cause": "The Docker daemon is not running, or your user cannot reach /var/run/docker.sock.",
+      "fix": "Start it: `sudo systemctl start docker` (or start Docker Desktop). If permission errors, add your user to the docker group and re-login.",
+      "ref": "https://docs.docker.com/engine/daemon/"
+    },
+    {
+      "id": "docker-port-alloc",
+      "title": "Docker: port is already allocated",
+      "lang": "Docker",
+      "pattern": "port is already allocated",
+      "cause": "Another container or host process already binds that port.",
+      "fix": "`docker ps` to find the container using it; stop it or map a different host port (-p 8081:80). On the host, lsof/netstat shows non-docker squatters.",
+      "ref": "https://docs.docker.com/engine/reference/commandline/run/"
+    },
+    {
+      "id": "docker-nospace",
+      "title": "no space left on device",
+      "lang": "Docker",
+      "pattern": "no space left on device",
+      "cause": "Disk full - commonly Docker build cache/images/volumes have eaten the disk.",
+      "fix": "`docker system df` to see usage; reclaim with `docker system prune -a --volumes` (careful: removes unused images/volumes). Check host disk with `df -h`.",
+      "ref": "https://docs.docker.com/engine/reference/commandline/system_prune/"
+    },
+    {
+      "id": "mysql-access-denied",
+      "title": "MySQL: Access denied for user",
+      "lang": "MySQL",
+      "pattern": "Access denied for user.*(?:MySQL|@)|Access denied for user",
+      "cause": "Credentials or host grant are wrong: bad password, the user is not allowed to connect from that host, or the client connects to the wrong server.",
+      "fix": "Verify with `mysql -u user -p -h host` using the same creds the app uses. Check the user's host pattern in `SELECT host,user FROM mysql.user;` - 'localhost' grants do not cover TCP from other machines.",
+      "ref": "https://dev.mysql.com/doc/refman/8.0/en/access-denied.html"
+    },
+    {
+      "id": "mysql-unknown-column",
+      "title": "MySQL: Unknown column / table doesn't exist",
+      "lang": "MySQL",
+      "pattern": "(Unknown column|doesn't exist|no such table)",
+      "cause": "The schema does not match the query: missing migration, wrong database, or a typo in the identifier.",
+      "fix": "Run `SHOW TABLES;` / `DESCRIBE table;` on the exact DB the app connects to. Pending migrations: run them (alembic/django migrate). Case sensitivity matters on Linux.",
+      "ref": "https://dev.mysql.com/doc/refman/8.0/en/error-messages-server.html"
+    },
+    {
+      "id": "pg-auth-failed",
+      "title": "PostgreSQL: password authentication failed",
+      "lang": "PostgreSQL",
+      "pattern": "password authentication failed for user|no pg_hba\\.conf entry",
+      "cause": "pg_hba.conf does not allow this user/host/method combination, or the password is wrong.",
+      "fix": "Check pg_hba.conf rules match your connection (host/user/db/method), reload postgres (`SELECT pg_reload_conf();`), and reset the password via the superuser if needed.",
+      "ref": "https://www.postgresql.org/docs/current/auth-pg-hba-conf.html"
+    },
+    {
+      "id": "nginx-502",
+      "title": "502 Bad Gateway (nginx upstream)",
+      "lang": "HTTP",
+      "pattern": "(502|504)\\s+(Bad Gateway|Gateway Time-out)|upstream (prematurely|timed out)",
+      "cause": "nginx reached for your backend but it is down, crashed, or too slow (504).",
+      "fix": "`systemctl status <app>` and app logs first - this is almost never an nginx problem. Check the upstream port/socket matches, and worker timeouts for 504s.",
+      "ref": "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
+    },
+    {
+      "id": "http-413",
+      "title": "413 Request Entity Too Large",
+      "lang": "HTTP",
+      "pattern": "(413|Request Entity Too Large)",
+      "cause": "The request body exceeds the server's size limit (nginx client_max_body_size or framework limit).",
+      "fix": "Raise the limit where it applies: nginx `client_max_body_size 20m;`, or framework config (e.g. Flask MAX_CONTENT_LENGTH).",
+      "ref": "https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size"
+    },
+    {
+      "id": "ssh-host-key",
+      "title": "SSH: HOST KEY VERIFICATION FAILED / remote host identification",
+      "lang": "SSH",
+      "pattern": "HOST KEY VERIFICATION FAILED|Remote host identification has changed",
+      "cause": "The server's host key changed (rebuild/re-IP) and your known_hosts still has the old one - or in scripts, ssh never got an answer about trusting the host.",
+      "fix": "If the change is expected: `ssh-keygen -R host` then reconnect and accept. In CI use `ssh -o StrictHostKeyChecking=accept-new`.",
+      "ref": "https://www.ssh.com/academy/ssh/host-key"
+    },
+    {
+      "id": "http-timeout-proxy",
+      "title": "Connection timed out / proxy issues",
+      "lang": "Network",
+      "pattern": "(Connection (timed out|refused)|ETIMEDOUT|EHOSTUNREACH)",
+      "cause": "Packets cannot reach the target: firewall/security group, wrong host, or an env proxy variable (HTTP_PROXY/HTTPS_PROXY) hijacking the request.",
+      "fix": "`curl -v host:port` from the same machine to bisect. Check `env | grep -i proxy` - stale proxy vars break fetches. Verify cloud security-group/firewall rules.",
+      "ref": "https://curl.se/docs/manpage.html"
+    }
+  ],
+  "security": [
+    {
+      "id": "sec-aws-key",
+      "title": "Hardcoded AWS Access Key",
+      "cwe": "CWE-798",
+      "severity": "critical",
+      "pattern": "AKIA[0-9A-Z]{16}",
+      "why": "An AWS access key ID is embedded in source. Anyone with repo access (or a leaked build artifact) gets your cloud account.",
+      "fix": "Revoke it in IAM immediately (hardcoded keys are considered compromised), rotate, and load from environment variables or a secrets manager.",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-private-key",
+      "title": "Private key material in code",
+      "cwe": "CWE-321",
+      "severity": "critical",
+      "pattern": "-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY( BLOCK)?-----",
+      "why": "A private key is embedded in the file. This is the crown jewel - treat it as leaked the moment it lands in code or chat.",
+      "fix": "Revoke/rotate the key, generate a new one stored in a secrets manager or key file outside the repo, and add the pattern to .gitignore/secret scanning.",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-openai-key",
+      "title": "Hardcoded OpenAI-style API key (sk-...)",
+      "cwe": "CWE-798",
+      "severity": "critical",
+      "pattern": "\\bsk-[A-Za-z0-9_-]{20,}",
+      "why": "A sk- prefixed API key appears in source; leaked keys get scraped by bots within minutes and can rack up huge bills.",
+      "fix": "Rotate the key at the provider dashboard now, then read it from an environment variable (.env, not committed).",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-github-token",
+      "title": "Hardcoded GitHub token (ghp_/github_pat_)",
+      "cwe": "CWE-798",
+      "severity": "critical",
+      "pattern": "\\b(ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{20,})",
+      "why": "A GitHub personal access token is in the code; it grants repo/account access until revoked.",
+      "fix": "Revoke at GitHub Settings > Developer settings, issue a new one via fine-grained tokens, inject via secrets (GitHub Actions secrets / env).",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-slack-token",
+      "title": "Hardcoded Slack token (xox...)",
+      "cwe": "CWE-798",
+      "severity": "critical",
+      "pattern": "\\bxox[baprs]-[A-Za-z0-9-]{10,}",
+      "why": "A Slack token is embedded in source and can be used to read/write workspace data.",
+      "fix": "Revoke it in Slack app settings and rotate; load from environment.",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-google-key",
+      "title": "Hardcoded Google API key (AIza...)",
+      "cwe": "CWE-798",
+      "severity": "high",
+      "pattern": "\\bAIza[0-9A-Za-z_-]{30,}",
+      "why": "A Google API key is embedded in source; quota theft and billing abuse are common.",
+      "fix": "Rotate in Google Cloud Console, restrict by referrer/API, and inject via environment.",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-generic-secret",
+      "title": "Generic credential assignment",
+      "cwe": "CWE-798",
+      "severity": "medium",
+      "pattern": "(?i)\\b(password|passwd|secret|api_key|apikey|auth_token|access_token)\\b\\s*[:=]\\s*[\\\"'][^\\\"']{12,}[\\\"']",
+      "why": "A long literal string assigned to a credential-like variable name. Verify it is not a real secret (placeholders like 'changeme' are fine).",
+      "fix": "If real: rotate and move to environment/config outside VCS. If a placeholder, rename it (e.g. PASSWORD_ENV) so scanners stop flagging it.",
+      "langs": [
+        "any"
+      ]
+    },
+    {
+      "id": "sec-eval",
+      "title": "eval()/exec() on dynamic input",
+      "cwe": "CWE-95",
+      "severity": "high",
+      "pattern": "(?<![.\\w])eval\\s*\\(|(?<![\\w.])exec\\s*\\(",
+      "why": "eval/exec turn strings into code. If any part of the string is user-influenced, this is arbitrary code execution.",
+      "fix": "Replace with explicit logic (dict dispatch, getattr with allowlist, json.loads for data). If truly unavoidable, validate input against a strict allowlist.",
+      "langs": [
+        "py",
+        "js"
+      ]
+    },
+    {
+      "id": "sec-shell-true",
+      "title": "subprocess with shell=True",
+      "cwe": "CWE-78",
+      "severity": "high",
+      "pattern": "subprocess\\.\\w+\\([^)]*shell\\s*=\\s*True",
+      "why": "With shell=True the command string goes through the shell; injected metacharacters turn into arbitrary OS commands.",
+      "fix": "Pass an argument list and shell=False (the default). For pipes, use shlex.quote on interpolations or do it in Python instead of the shell.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-os-system",
+      "title": "os.system() / os.popen() usage",
+      "cwe": "CWE-78",
+      "severity": "high",
+      "pattern": "(?<![\\w.])os\\.(system|popen)\\s*\\(",
+      "why": "os.system builds a shell command from a string - classic command injection when any component is dynamic.",
+      "fix": "Use subprocess.run([...], shell=False, check=True) with an argument list.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-sql-fstring",
+      "title": "SQL built with f-string / concat / format",
+      "cwe": "CWE-89",
+      "severity": "critical",
+      "pattern": "(?is)(?:execute|executemany)\\s*\\(\\s*f?[\\\"'].{0,200}?(?:select|insert|update|delete).{0,200}?(?:\\{|%\\s|\\+\\s*\\w|\\.\\s*format)",
+      "why": "SQL text assembled from interpolated values allows SQL injection - the single most exploited web vulnerability class.",
+      "fix": "Use parameterized queries: cursor.execute(\"... WHERE id = %s\", (val,)). ORMs' bound parameters are safe too. String-formatting into SQL is never acceptable.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-unsafe-pickle",
+      "title": "pickle.loads on untrusted data",
+      "cwe": "CWE-502",
+      "severity": "high",
+      "pattern": "pickle\\.loads?\\s*\\(",
+      "why": "Unpickling attacker-controlled bytes executes embedded Python code - deserialization RCE.",
+      "fix": "Use JSON (or another non-executing format) for anything crossing a trust boundary. pickle only for your own local, trusted caches.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-unsafe-yaml",
+      "title": "yaml.load without SafeLoader",
+      "cwe": "CWE-502",
+      "severity": "high",
+      "pattern": "yaml\\.load\\s*\\((?![^)]*SafeLoader)",
+      "why": "yaml.load with the default loader can construct arbitrary Python objects from the YAML - deserialization RCE.",
+      "fix": "Use yaml.safe_load() (or yaml.load(..., Loader=yaml.SafeLoader)).",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-tpl-sst",
+      "title": "Server-side template built from string",
+      "cwe": "CWE-1336",
+      "severity": "high",
+      "pattern": "(?i)(flask\\.)?render_template_string\\s*\\(",
+      "why": "Rendering user-influenced strings as templates allows SSTI -> full server compromise ({{ }} escape into Python).",
+      "fix": "Render static template files with dynamic values passed as context variables, never build template text from input.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-xxe",
+      "title": "XML parser without entity protection",
+      "cwe": "CWE-611",
+      "severity": "medium",
+      "pattern": "(?i)xml\\.etree\\.ElementTree\\.parse|fromstring\\s*\\(|lxml\\.etree\\.(?:from|parse)",
+      "why": "Default Python XML parsers resolve external entities, enabling file-read (XXE) and billion-laughs DoS against attacker-supplied XML.",
+      "fix": "For untrusted XML, defuse entities (defusedxml) or disable DTDs/entity resolution in the parser config.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-jwt-none",
+      "title": "JWT verify without algorithm pinning",
+      "cwe": "CWE-347",
+      "severity": "high",
+      "pattern": "jwt\\.decode\\s*\\((?![^)]*algorithms)",
+      "why": "Decoding JWTs without an explicit algorithms allowlist enables the 'alg: none' / algorithm-confusion attacks - forged tokens accepted.",
+      "fix": "Always pin: jwt.decode(token, key, algorithms=[\"HS256\"]).",
+      "langs": [
+        "py",
+        "js"
+      ]
+    },
+    {
+      "id": "sec-verify-false",
+      "title": "TLS verification disabled (verify=False)",
+      "cwe": "CWE-295",
+      "severity": "high",
+      "pattern": "verify\\s*=\\s*False|NODE_TLS_REJECT_UNAUTHORIZED\\s*=\\s*['\\\"]?0",
+      "why": "Certificate validation is off: any network MITM can read/modify the traffic. Usually added to 'fix' an SSL error - that hides the real problem.",
+      "fix": "Fix the trust chain (proper CA bundle, proxy CA). If you must call a self-signed internal service, pin its certificate instead.",
+      "langs": [
+        "py",
+        "js"
+      ]
+    },
+    {
+      "id": "sec-xss-innerhtml",
+      "title": "innerHTML / dangerouslySetInnerHTML with dynamic value",
+      "cwe": "CWE-79",
+      "severity": "high",
+      "pattern": "innerHTML\\s*=|dangerouslySetInnerHTML",
+      "why": "Writing dynamic HTML into the DOM without sanitization enables stored/reflected XSS.",
+      "fix": "Use textContent for plain text. If rich HTML is genuinely required, sanitize server-side with a strict allowlist (DOMPurify / bleach).",
+      "langs": [
+        "js"
+      ]
+    },
+    {
+      "id": "sec-cors-wildcard",
+      "title": "CORS wildcard origin",
+      "cwe": "CWE-942",
+      "severity": "medium",
+      "pattern": "origin\\s*:\\s*[\\\"']\\*[\\\"']",
+      "why": "Access-Control-Allow-Origin: * lets any website read responses - dangerous when credentials/cookies are involved.",
+      "fix": "Set an explicit origin allowlist; with credentials, the exact origin is required by spec anyway.",
+      "langs": [
+        "js",
+        "py"
+      ]
+    },
+    {
+      "id": "sec-open-redirect",
+      "title": "Redirect to user-supplied URL",
+      "cwe": "CWE-601",
+      "severity": "medium",
+      "pattern": "redirect\\s*\\(\\s*(request\\.(?:args|form|values)\\.get|url)",
+      "why": "Redirecting to a URL taken from the request enables phishing that shows your domain.",
+      "fix": "Validate against an allowlist of relative paths or trusted hosts before redirecting (urlsplit + netloc check).",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-weak-hash",
+      "title": "MD5/SHA1 used (password/token context)",
+      "cwe": "CWE-327",
+      "severity": "medium",
+      "pattern": "(?i)(hashlib\\.)?(md5|sha1)\\s*\\(",
+      "why": "MD5/SHA1 are broken for security purposes (collisions, fast brute-force). Passwords need slow, salted hashes; integrity needs SHA-256+.",
+      "fix": "Passwords: bcrypt/scrypt/argon2. File/integrity digests: SHA-256. (MD5 is fine only for non-security cache keys.)",
+      "langs": [
+        "py",
+        "js"
+      ]
+    },
+    {
+      "id": "sec-insecure-random",
+      "title": "PRNG used for tokens",
+      "cwe": "CWE-338",
+      "severity": "high",
+      "pattern": "(?i)(random\\.(random|randint|choice|randrange)|Math\\.random)\\s*\\(",
+      "why": "Mersenne-Twister PRNG is predictable - tokens, reset links, session ids made from it are guessable.",
+      "fix": "Use the secrets module (Python) or crypto.getRandomValues / crypto.randomBytes (JS/Node).",
+      "langs": [
+        "py",
+        "js"
+      ]
+    },
+    {
+      "id": "sec-debug-true",
+      "title": "Debug mode hardcoded",
+      "cwe": "CWE-489",
+      "severity": "medium",
+      "pattern": "(?i)(app\\.run\\([^)]*debug\\s*=\\s*True|DEBUG\\s*=\\s*True|FLASK_ENV\\s*=\\s*[\\\"']development)",
+      "why": "Debug mode in production leaks source, stack traces, and (Werkzeug) can expose an interactive console = RCE.",
+      "fix": "Gate by environment: debug only when ENV=dev, off by default. Never expose the Werkzeug debugger publicly.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-hardcoded-flask-secret",
+      "title": "Flask SECRET_KEY hardcoded",
+      "cwe": "CWE-798",
+      "severity": "high",
+      "pattern": "(?i)SECRET_KEY\\s*=\\s*[\\\"'][^\\\"']{8,}[\\\"']",
+      "why": "The session-signing key is in source; repo access lets attackers forge session cookies.",
+      "fix": "Generate per-deployment (secrets.token_hex(32)) and load from environment.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-chmod-777",
+      "title": "World-writable permissions (0o777)",
+      "cwe": "CWE-732",
+      "severity": "medium",
+      "pattern": "chmod\\s*\\(\\s*[^)]+0o?777",
+      "why": "0o777 lets any user on the host write/replace the file - privilege escalation foothold.",
+      "fix": "Grant the minimum: 0o644 for files, 0o755 for dirs, owner-limited for secrets.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-predictable-tmp",
+      "title": "Predictable temp file (tempfile.mktemp)",
+      "cwe": "CWE-377",
+      "severity": "low",
+      "pattern": "tempfile\\.mktemp\\s*\\(",
+      "why": "mktemp returns a name without creating it - race window lets an attacker pre-create/symlink the path.",
+      "fix": "Use tempfile.mkstemp() / NamedTemporaryFile(create=True) which create securely by construction.",
+      "langs": [
+        "py"
+      ]
+    },
+    {
+      "id": "sec-assert-authz",
+      "title": "assert() used for access control",
+      "cwe": "CWE-617",
+      "severity": "medium",
+      "pattern": "^\\s*assert\\s+(user|current_user|session|request)",
+      "why": "Python strips asserts under -O optimization: your authorization check disappears in production.",
+      "fix": "Use explicit `if not allowed: abort(403)` style checks that run in all modes.",
+      "langs": [
+        "py"
+      ]
+    }
+  ]
+}
