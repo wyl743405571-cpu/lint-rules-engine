@@ -1,0 +1,724 @@
+{
+  "_readme": "ESL -> Native rule pack. Deterministic L1-transfer patterns that generic grammar checkers miss. Each rule names its first-language cause.",
+  "_count": 78,
+  "_l1_languages": [
+    "Arabic",
+    "Arabic/Hebrew",
+    "Chinese",
+    "French",
+    "German",
+    "Hindi/Urdu",
+    "Japanese/Korean",
+    "Polish/Czech",
+    "Polish/Czech/Slavic",
+    "Russian",
+    "Spanish",
+    "Spanish/Portuguese",
+    "Turkish",
+    "Vietnamese"
+  ],
+  "esl": [
+    {
+      "id": "l1-zh-no-article",
+      "title": "Missing article (Chinese has no 'a/an/the')",
+      "sev": "high",
+      "pattern": "\\b(I|we|they|you|he|she)\\s+(am|are|is|was|were)\\s+(student|teacher|engineer|researcher|writer|designer)\\b|\\bhe\\s+is\\s+engineer\\b|\\bshe\\s+is\\s+teacher\\b",
+      "why": "Chinese has no article system, so 'a/an/the' get dropped entirely. This is the single most reliable L1 tell of a Chinese native speaker.",
+      "fix": "Add the article: 'I am a student', 'he is an engineer', 'in university'.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-zh-measure-word",
+      "title": "Measure-word / plural-noun leak (Chinese classifier habit)",
+      "sev": "medium",
+      "pattern": "\\b(two|three|four|five|several|many)\\s+(years?|months?)\\s+of\\s+experiences\\b|\\bmany\\s+peoples\\b|\\bseveral\\s+equipments\\b|\\bmany\\s+informations\\b\\\"",
+      "why": "Chinese uses a measure word between number and noun (three 'students') and often keeps the classifier in English, producing 'many peoples' / 'three years of experiences'.",
+      "fix": "Drop the classifier: 'many people', 'three years of experience'.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-zh-de-nominalization",
+      "title": "'De'-style nominalization (Chinese often stacks nouns)",
+      "sev": "medium",
+      "pattern": "\\b(punctuation|grammar|syntax|vocabulary|pronunciation)\\s+(problems?|issues?|mistakes?)\\s+(analysis|improvement|enhancement)\\b|\\b(the|our)\\s+\\w+\\s+analysis\\s+improvement\\s+(analysis|assessment)\\b",
+      "why": "Chinese can stack modifiers and nominalize densely. The result reads to English ears as an unnaturally dense noun pile.",
+      "fix": "Unstack into a clause: 'problems with punctuation' not 'punctuation problems analysis improvement'.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-zh-tense-drift",
+      "title": "Tense drift (Chinese verbs carry no inflection)",
+      "sev": "high",
+      "pattern": "\\b(yesterday|last\\s+\\w+|in\\s+20\\d\\d)\\b[^.!?]{0,60}\\b(I\\s+work|we\\s+work|I\\s+study|we\\s+study|I\\s+do|we\\s+do|will\\s+work|is\\s+work)\\b",
+      "why": "Chinese verbs do not conjugate for tense/pers. Writers keep present tense where English requires past -- very visible in application essays.",
+      "fix": "Use past tense: 'Last year I worked at...' not 'Last year I work at...'.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-zh-passive-overuse",
+      "title": "Passive-heavy '被' construction leak",
+      "sev": "medium",
+      "pattern": "\\b(was|were)\\s+\\w+(ed|en)\\s+(by\\s+me|by\\s+us)\\b|\\bbeing\\s+\\w+(ed|en)\\s+by\\b",
+      "why": "Chinese marks the passive with 被 regardless of agency, so C1 writers overuse English passive even where an active voice is clearer.",
+      "fix": "Prefer active voice with a clear actor: 'I led the team'.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-zh-when-then",
+      "title": "'When...then' literal translation",
+      "sev": "medium",
+      "pattern": "\\bwhen\\s+.{3,50},?\\s+then\\s+(I|we|you|they|he|she)\\b",
+      "why": "English drops 'then' after 'when' in most cases; Chinese keeps 然后.",
+      "fix": "Drop 'then': 'When I arrived, I called...'.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-zh-very-very-long-sentence",
+      "title": "Over-long run-on sentence (no English clause boundary)",
+      "sev": "medium",
+      "pattern": "\\b\\w+\\b([,\\s]+\\w+){35,}",
+      "why": "Chinese allows very long sentences; English readers need clause boundaries. Missing periods in a C1 essay is a readability red flag.",
+      "fix": "Split into two or three sentences at natural clause boundaries.",
+      "l1": "Chinese"
+    },
+    {
+      "id": "l1-ru-article-omitted",
+      "title": "Article fully omitted (Russian has no article system)",
+      "sev": "high",
+      "pattern": "\\bgo(es)?\\s+to\\s+(university|college|school)\\b|\\bin\\s+the\\s+(beginning|end)\\s+(I|we)\\b|\\bI\\s+(work|worked|live|lived)\\s+in\\s+the\\s+\\w+\\s+for\\s+\\w+\\s+years\\b",
+      "why": "Russian has no grammatical article, so articles are omitted wholesale and the 'in the beginning / in the end' calque appears literally.",
+      "fix": "Drop the article where English requires none: 'go to university', 'in the beginning'.",
+      "l1": "Russian"
+    },
+    {
+      "id": "l1-ru-preposition-drift",
+      "title": "Preposition drift (case-driven in Russian)",
+      "sev": "medium",
+      "pattern": "\\bon\\s+the\\s+week\\s+of\\b|\\bin\\s+the\\s+morning\\s+of\\b|\\bat\\s+the\\s+time\\s+of\\b",
+      "why": "Russian case endings drive preposition choice; literal translations produce these over-specified prepositional phrases.",
+      "fix": "Use the natural English phrase: 'last week', 'in the morning', 'when'.",
+      "l1": "Russian"
+    },
+    {
+      "id": "l1-es-tense-ser-estar",
+      "title": "Ser/estar tense mix-up (Spanish)",
+      "sev": "high",
+      "pattern": "\\bI\\s+am\\s+having\\b|\\bI\\s+am\\s+working\\s+since\\b|\\bwe\\s+are\\s+having\\b(?!\\s+a\\s+(meeting|conversation))",
+      "why": "Spanish verb conjugation merges 'ser/estar' usages; writers produce 'I am working since 2020' where English needs present perfect.",
+      "fix": "Fix the tense: 'I have worked since 2020', 'I am doing well'.",
+      "l1": "Spanish"
+    },
+    {
+      "id": "l1-es-exactly-for",
+      "title": "'Exactly for' / literal intensifier translation",
+      "sev": "medium",
+      "pattern": "\\bexactly\\s+for\\s+(the\\s+)?(first|time|reason|purpose)\\b|\\bexactly\\s+because\\b",
+      "why": "Spanish intensifier constructions translated literally produce 'exactly for'.",
+      "fix": "Use plain English: 'precisely because', 'specifically for'.",
+      "l1": "Spanish"
+    },
+    {
+      "id": "l1-pt-gerund-overuse",
+      "title": "Gerund overuse (Spanish/Portuguese)",
+      "sev": "medium",
+      "pattern": "\\b\\w+ing\\s+the\\s+(answer|solution|problem|goal|target)\\b|\\bby\\s+\\w+ing\\s+\\w+ing\\b",
+      "why": "Spanish/Portuguese love gerunds; English prefers nouns or finite verbs here.",
+      "fix": "Use a noun or full verb: 'by solving', 'the solution'.",
+      "l1": "Spanish/Portuguese"
+    },
+    {
+      "id": "l1-jp-kr-subject-omitted",
+      "title": "Subject omitted (Japanese/Korean are pro-drop)",
+      "sev": "high",
+      "pattern": "(?<![\\w'])(is|are|was|were|am)\\s+(very|really|quite|so)\\s+\\w+|^,\\s*(I|we|he|she|they)\\s+(am|are|was|were)\\b|\\b(is|are|was|were)\\s+(not\\s+)?(important|good|bad|different|possible)\\s+(for|to)\\b",
+      "why": "Japanese and Korean omit subjects (pro-drop languages). In English a missing subject reads as broken rather than elegant.",
+      "fix": "Add the subject: 'It is very important to...'",
+      "l1": "Japanese/Korean"
+    },
+    {
+      "id": "l1-jp-kr-copula-missing",
+      "title": "Copula missing after noun (Japanese/Korean)",
+      "sev": "medium",
+      "pattern": "\\b(this|that|it|he|she|they)\\s+(very|really)\\s+(important|good|nice|interesting)\\b(?!\\s+(is|was))",
+      "why": "Japanese/Korean omit the copula; the English 'be' gets dropped after adjectives.",
+      "fix": "Add the copula: 'This is very important'.",
+      "l1": "Japanese/Korean"
+    },
+    {
+      "id": "esl-hedging-stacked",
+      "title": "Hedging stacks weaken the sentence",
+      "sev": "medium",
+      "pattern": "\\b(might|maybe|perhaps|possibly|probably|somewhat|kind of|sort of|a bit|a little)\\b[^.;:!?]{0,40}\\b(might|maybe|perhaps|possibly|probably|somewhat|kind of|sort of)\\b",
+      "why": "Two hedges in one clause. Native writers pick one and commit to a real verb.",
+      "fix": "Delete one hedge and replace the weak verb with a definite one.",
+      "l1": ""
+    },
+    {
+      "id": "esl-weak-verb",
+      "title": "Vague 'make/do/get' instead of a precise verb",
+      "sev": "medium",
+      "pattern": "\\b(make a decision|do a research|make a progress|do an effort|make efforts|make an effort)\\b",
+      "why": "'Make/do' + noun is a calque of a common L1 construction. Use a precise verb.",
+      "fix": "Use the precise verb: decide / research / improve / attempt.",
+      "l1": ""
+    },
+    {
+      "id": "esl-get-receive",
+      "title": "'Get + object' as a calque of 'receive/understand'",
+      "sev": "low",
+      "pattern": "\\bI\\s+(get|got)\\s+(understand|know|realize|realise)\\b|\\bI\\s+get\\s+(it|them)\\b",
+      "why": "Some L1s use a generic 'get' where English has a precise verb.",
+      "fix": "Use the precise verb: understand / realize.",
+      "l1": ""
+    },
+    {
+      "id": "esl-according-to-me",
+      "title": "'According to me' filler",
+      "sev": "high",
+      "pattern": "\\baccording to me\\b",
+      "why": "Direct translation of a common non-native phrase. English states the view directly.",
+      "fix": "Delete it, or attribute properly ('In my view' / 'According to X').",
+      "l1": ""
+    },
+    {
+      "id": "esl-in-my-opinion",
+      "title": "'In my opinion' on every claim",
+      "sev": "low",
+      "pattern": "\\bin my opinion\\b",
+      "why": "Fine once, repetitive when it opens every paragraph -- an L1 essay habit.",
+      "fix": "Keep at most once; let the claim speak.",
+      "l1": ""
+    },
+    {
+      "id": "esl-this-is-very",
+      "title": "Empty 'This is a very ...' opener",
+      "sev": "low",
+      "pattern": "\\bthis is a very (good|important|interesting|useful|great)\\b",
+      "why": "Filler openers delay the point and read as non-native.",
+      "fix": "Lead with the concrete fact.",
+      "l1": ""
+    },
+    {
+      "id": "esl-im-would-like-to",
+      "title": "'I would like to' hedging opener",
+      "sev": "low",
+      "pattern": "\\bI would like to (apply|express|thank|ask|say)\\b",
+      "why": "Over-polite opener habit common in C1 academic writing.",
+      "fix": "Use a direct verb: 'I am applying', 'I thank you'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-run-on-comma",
+      "title": "Comma splice (two clauses joined by a comma)",
+      "sev": "high",
+      "pattern": ",\\s+(i|we|they|he|she|it|this|that|there)\\s+(am|are|is|was|were|have|has|had|will|would|can|could)\\b",
+      "why": "A comma cannot join two independent clauses. A top-3 ESL error.",
+      "fix": "Use a period, semicolon, or a connector.",
+      "l1": ""
+    },
+    {
+      "id": "esl-run-on-and",
+      "title": "Comma + 'and' joining two long independent clauses",
+      "sev": "medium",
+      "pattern": ",\\s+and\\s+\\w+\\s+(is|are|was|were|has|have|will|would)\\b",
+      "why": "A light 'and' alone often produces a run-on in formal writing.",
+      "fix": "Use a semicolon, or split into two sentences.",
+      "l1": ""
+    },
+    {
+      "id": "esl-article-fixed-phrase",
+      "title": "'the' + fixed phrase that takes no article",
+      "sev": "high",
+      "pattern": "\\b(in the university|in the company|in the school|in the beginning|in the end|in the last year|at the university|at the beginning)\\b",
+      "why": "Fixed phrases do not take 'the'. One of the most reliable non-native tells.",
+      "fix": "Drop the article: at university, in the beginning, in the end.",
+      "l1": ""
+    },
+    {
+      "id": "esl-article-a-plus-adjective",
+      "title": "'a' before an adjective missing its noun",
+      "sev": "medium",
+      "pattern": "\\b(is|was|are|were)\\s+(very|really|quite|extremely)\\s+(important|good|bad|difficult|easy)\\s+(to|for)\\b(?!.*\\b[a-z]+\\b)",
+      "why": "A 'to-infinitive' clause needs the article only if a noun follows; dropping it across the board is a common over-correction from ESL writers.",
+      "fix": "'It is important to X' (no article) is correct; watch for over-insertion.",
+      "l1": ""
+    },
+    {
+      "id": "esl-present-perfect",
+      "title": "'Since/for + past' where present perfect is required",
+      "sev": "high",
+      "pattern": "\\bsince\\s+(I|we|they|he|she)\\s+(was|were|did|worked|studied|lived)\\b|\\bfor\\s+(the\\s+last|past)\\s+\\w+\\s+(year|month|week)s?\\b[^.!?]{0,40}\\b(I|we)\\s+(work|study|live|am|are)\\b",
+      "why": "Present perfect is required after 'since/for + duration'. Chinese/Russian writers keep present tense here.",
+      "fix": "Use present perfect: 'Since I have worked...'",
+      "l1": ""
+    },
+    {
+      "id": "esl-must-for-obligation",
+      "title": "'Must' for ordinary obligation",
+      "sev": "medium",
+      "pattern": "\\b(I|we|you)\\s+must\\b(?!\\s+not\\b)",
+      "why": "Non-native writers overuse 'must' where 'have to' / 'should' / simple present is correct, overstating the obligation.",
+      "fix": "Downgrade to 'have to' (necessity) or 'should' (recommendation).",
+      "l1": ""
+    },
+    {
+      "id": "esl-past-participle-passive-mix",
+      "title": "'Since I am graduate' (adjective/noun confusion)",
+      "sev": "medium",
+      "pattern": "\\bI am graduate\\b|\\bhe is student\\b|\\bshe is engineer\\b|\\bI am employee\\b",
+      "why": "Some L1s drop the noun/verb inflection ('I am graduate' for 'I am a graduate').",
+      "fix": "Add the noun form or article: 'I am a graduate'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-double-negative",
+      "title": "Double negative",
+      "sev": "medium",
+      "pattern": "\\b(don't|doesn't|didn't|can't|won't|isn't|aren't|wasn't)\\b[^.?!]{0,30}\\b(no|never|nothing|nobody|nowhere)\\b",
+      "why": "Negating an already-negative word is rare in standard English.",
+      "fix": "Use one negative: 'I don't know' / 'I know nothing'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-comparison-double",
+      "title": "'more + comparative' redundancy",
+      "sev": "medium",
+      "pattern": "\\bmore\\s+\\w+er\\b|\\bmost\\s+\\w+est\\b",
+      "why": "Never double a comparative. A very visible ESL tell.",
+      "fix": "Use either 'more + long word' or the '-er' form.",
+      "l1": ""
+    },
+    {
+      "id": "esl-really-very",
+      "title": "Intensifier stacking",
+      "sev": "low",
+      "pattern": "\\b(very|really|quite|extremely|incredibly|so)\\s+\\1\\b",
+      "why": "Native writing uses a single precise intensifier.",
+      "fix": "Use one stronger word.",
+      "l1": ""
+    },
+    {
+      "id": "esl-very-research",
+      "title": "'Very' before positive adjectives (needs a stronger word)",
+      "sev": "low",
+      "pattern": "\\bvery\\s+(good|important|interesting|successful|difficult|useful)\\b",
+      "why": "Native writers avoid 'very + positive adjective' -- it reads childlike.",
+      "fix": "Use a stronger single word: excellent, crucial, compelling.",
+      "l1": ""
+    },
+    {
+      "id": "esl-passive-noun",
+      "title": "Passive-heavy nominalization (reads stiff)",
+      "sev": "low",
+      "pattern": "\\b(is|are|was|were|be|been|being)\\s+\\w+(tion|ment|ance|ence|ity)\\s+of\\b",
+      "why": "Noun-heavy passives read stiffly in English application writing.",
+      "fix": "Use a verb: '... because it improved ...' not '... due to the improvement of ...'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-of-course-calque",
+      "title": "'Of course' used as filler",
+      "sev": "low",
+      "pattern": "\\bof course,?\\s+(I|we|it|this)\\b",
+      "why": "Overused discourse marker in L1 writing.",
+      "fix": "Delete it or use a real connective.",
+      "l1": ""
+    },
+    {
+      "id": "esl-attention-draw-attention",
+      "title": "'Pay attention' calque of 'please note'",
+      "sev": "low",
+      "pattern": "\\bplease\\s+(pay attention|note)\\s+that\\b|\\bit should be noted that\\b|\\bplease be advised that\\b",
+      "why": "Literal translation of a formal note phrase; reads as filler.",
+      "fix": "State the point directly.",
+      "l1": ""
+    },
+    {
+      "id": "esl-conclusion-transitions",
+      "title": "Translational connectives (chain)",
+      "sev": "low",
+      "pattern": "\\b(in addition|moreover|furthermore|additionally),\\s+\\w+\\s+also\\b|\\bfirstly,\\s+secondly,\\s+thirdly\\b|\\bin\\s+conclusion,\\s+we\\s+(can|should|could)\\s+say\\b",
+      "why": "Mechanical transitional chains (translational habits) make writing read machine-translated.",
+      "fix": "Use plain connectors: 'Also', 'But', 'So'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-studying-knowledge",
+      "title": "'Study knowledge' literal combination",
+      "sev": "medium",
+      "pattern": "\\bstudy\\s+(the\\s+)?knowledge\\s+of\\b|\\blearn\\s+knowledge\\b|\\bknow\\s+many\\s+knowledge\\b",
+      "why": "Direct translation of 'xuexi' / 'knowledge' collocations.",
+      "fix": "Use the natural pair: 'gain knowledge', 'study', 'learn about'.",
+      "l1": ""
+    },
+    {
+      "id": "l1-ar-agreement",
+      "title": "Verb agreement with the subject ('he/she/it' mismatch)",
+      "sev": "high",
+      "pattern": "\\b(he|she|it)\\s+(are|were|have)\\b|\\b(they|we|you)\\s+(is|was)\\b",
+      "why": "Arabic/Urdu/Hebrew verbs inflect for person and number, so subject-verb agreement is automatic in the L1 and is easy to drop in English.",
+      "fix": "Match the verb to the subject: 'he IS', 'they ARE'.",
+      "l1": "Arabic/Hebrew"
+    },
+    {
+      "id": "l1-ar-in-definite-article",
+      "title": "'the' used where Arabic uses the definite article too freely",
+      "sev": "medium",
+      "pattern": "\\bin\\s+the\\s+(school|university|company|work)\\b(?!.*\\bafter\\b)",
+      "why": "Arabic definite article usage maps roughly but not exactly onto English 'the'; the transfer shows up as 'the' where English omits it.",
+      "fix": "English: 'at school', 'at work' (no article) in those senses.",
+      "l1": "Arabic"
+    },
+    {
+      "id": "l1-hi-perfective-marker",
+      "title": "Missing present perfect where the L1 marks habituality",
+      "sev": "medium",
+      "pattern": "\\bI\\s+(work|study|live|teach)\\s+since\\s+\\d{4}\\b|\\bhe\\s+(work|study|lives)\\s+from\\s+\\d{4}\\b",
+      "why": "Hindi/Urdu mark habitual or ongoing action with a perfective participle that English expresses with present perfect or simple present + 'always'.",
+      "fix": "Use present perfect: 'I have worked since 2020'.",
+      "l1": "Hindi/Urdu"
+    },
+    {
+      "id": "l1-pl-word-order-calque",
+      "title": "Case-driven word order carried into English",
+      "sev": "medium",
+      "pattern": "\\b(about\\s+\\w+)\\s+(about\\s+\\w+)\\b|\\bin\\s+the\\s+case\\s+of\\s+\\w+\\s+in\\s+the\\s+case\\s+of\\b",
+      "why": "Slavic languages mark case with endings, so word order is freer. The English result is repeated prepositional frames.",
+      "fix": "Use one preposition: 'about X' not 'about X about Y'.",
+      "l1": "Polish/Czech"
+    },
+    {
+      "id": "l1-pl-no-article-after-preposition",
+      "title": "Article kept after a preposition (where English drops it)",
+      "sev": "medium",
+      "pattern": "\\b(in|at|on|for|with|to)\\s+(the\\s+university|school|home|work)\\b",
+      "why": "Case-driven languages still require an article after the preposition; English drops it in fixed phrases.",
+      "fix": "Drop it: 'at university', 'go home', 'at work'.",
+      "l1": "Polish/Czech/Slavic"
+    },
+    {
+      "id": "l1-vn-plural-stacking",
+      "title": "Plural stacked with a noun already marked plural",
+      "sev": "medium",
+      "pattern": "\\b(many|several|few|various|numerous)\\s+\\w+s\\s+s\\b|\\b\\w+s\\s+s\\b",
+      "why": "Vietnamese does not mark plural on the noun, so writers sometimes add -s where English already implies it.",
+      "fix": "Check whether the noun is already plural: 'many students' not 'many students s'.",
+      "l1": "Vietnamese"
+    },
+    {
+      "id": "l1-tr-agglutination",
+      "title": "Turkish verb suffixes carried into English as separate words",
+      "sev": "medium",
+      "pattern": "\\b(mek|mak|lar|ler|dur|iyor)\\b\\s+\\w+",
+      "why": "Turkish verb morphology attaches many suffixes that English expresses with separate words or tense markers.",
+      "fix": "Use English tense: 'he works', not 'he works meklar'.",
+      "l1": "Turkish"
+    },
+    {
+      "id": "l1-de-separable-verb",
+      "title": "German separable-verb prefix left on the wrong side",
+      "sev": "low",
+      "pattern": "\\b(auf|aus|an|ab|ein|mit|vor|zu)\\s+\\w+\\s+\\w+ed\\b",
+      "why": "German separable verbs split the prefix; English keeps it attached.",
+      "fix": "Keep the prefix attached: 'started', not 'start ed up'.",
+      "l1": "German"
+    },
+    {
+      "id": "l1-fr-ne-pas-que",
+      "title": "'Ne ... pas' negation calque",
+      "sev": "low",
+      "pattern": "\\bnot\\s+\\w+\\s+not\\b(?!\\s+(only|just|necessarily))",
+      "why": "French wraps the negative with ne...pas; English uses a single negative.",
+      "fix": "One negative: 'I do not know', never 'I do not know not'.",
+      "l1": "French"
+    },
+    {
+      "id": "esl-fragment-sentence",
+      "title": "Fragment sentence (no main verb)",
+      "sev": "high",
+      "pattern": "(?:^|[.!?]\\s+)(Because|Although|While|If|When|After|Before|Since|That|Which)\\b[^.!?]{0,60}[,.]\\s",
+      "why": "A clause starting with a subordinator needs a main verb to finish the sentence. Fragment sentences read as broken to native ears.",
+      "fix": "Complete the sentence: add a subject and main verb.",
+      "l1": ""
+    },
+    {
+      "id": "esl-run-on-no-comma",
+      "title": "Two sentences run together with no punctuation",
+      "sev": "high",
+      "pattern": "\\b\\w+ed\\s+\\w+ed\\s+\\w+ed\\s+\\w+ed\\b(?![^.!?]*[.!?])",
+      "why": "A string of past participles with no main verb is a very common non-native pattern, especially in applicant CVs.",
+      "fix": "Add a main verb and punctuation: 'I designed, built and shipped...'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-missing-conjunction",
+      "title": "Missing conjunction between two verbs",
+      "sev": "medium",
+      "pattern": "\\bI\\s+\\w+ed\\s+\\w+ed\\b(?!\\s+(and|then|also))",
+      "why": "English needs a conjunction between coordinated verbs.",
+      "fix": "Insert 'and' / 'then': 'I designed and built...'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-l1-is-are-agree",
+      "title": "Subject-verb agreement ('is' with plural)",
+      "sev": "high",
+      "pattern": "\\b(they|we|you|these|those)\\s+(is|was|has)\\b|\\b(it|he|she|this)\\s+(are|were|have)\\b",
+      "why": "Basic agreement is the one thing every grammar checker should catch; if it is still wrong, the pattern is worth a dedicated pass.",
+      "fix": "they ARE / it IS.",
+      "l1": ""
+    },
+    {
+      "id": "esl-article-before-proper-noun",
+      "title": "Article before an uncountable abstract noun used wrongly",
+      "sev": "low",
+      "pattern": "\\bthe\\s+(advice|information|knowledge|research|equipment|evidence)\\b",
+      "why": "Abstract uncountable nouns normally take no article.",
+      "fix": "Drop 'the': 'the advice' -> 'advice'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-double-comparison",
+      "title": "'most + est' redundancy",
+      "sev": "medium",
+      "pattern": "\\bmost\\s+\\w+est\\b",
+      "why": "Never double the superlative.",
+      "fix": "Use 'most' + long word or '-est', not both.",
+      "l1": ""
+    },
+    {
+      "id": "esl-there-is-plural",
+      "title": "'There is' with a plural noun",
+      "sev": "high",
+      "pattern": "\\bthere\\s+is\\s+(many|much|several|two|three|four|five|numerous)\\b",
+      "why": "Agreement again, but extremely common in non-native writing.",
+      "fix": "Use 'there ARE many'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-could-of",
+      "title": "'Could of' / 'would of' / 'should of'",
+      "sev": "high",
+      "pattern": "\\b(could|would|should|must|might)\\s+of\\b",
+      "why": "Non-native writers hear 'could have' and write 'of'. One of the most recognisable ESL written errors.",
+      "fix": "Use 'have': 'could have written'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-less-vs-fewer",
+      "title": "'less' with a countable plural noun",
+      "sev": "medium",
+      "pattern": "\\bless\\s+(people|students|errors|items|words|files|tests|options|features)\\b",
+      "why": "Countable plurals take 'fewer'; only uncountables take 'less'.",
+      "fix": "Use 'fewer'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-affect-vs-effect",
+      "title": "'Affect' used as a noun",
+      "sev": "medium",
+      "pattern": "\\bthe\\s+affect\\s+of\\b|\\bin\\s+affect\\b",
+      "why": "'Affect' is the verb; 'effect' is the noun. Frequent L1 transfer.",
+      "fix": "Use 'the effect of' / 'in effect'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-its-vs-its",
+      "title": "Its written without apostrophe when possessive",
+      "sev": "low",
+      "pattern": "\\bits\\s+(own|role|value|purpose|team|value|important|useful)\\b",
+      "why": "Possessive 'its' takes no apostrophe; 'it's' means 'it is'.",
+      "fix": "Use 'its' (no apostrophe) for possession.",
+      "l1": ""
+    },
+    {
+      "id": "esl-alot",
+      "title": "'Alot' as one word",
+      "sev": "low",
+      "pattern": "\\balot\\b",
+      "why": "'A lot' is two words; 'alot' is not a word.",
+      "fix": "Write 'a lot'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-definite-restrictive-clause",
+      "title": "Overuse of 'which' where 'that' is required",
+      "sev": "low",
+      "pattern": ",\\s+which\\b",
+      "why": "English restricts with 'that' and adds with 'which'. Non-native writers often attach every clause with 'which'.",
+      "fix": "Use 'that' for defining clauses.",
+      "l1": ""
+    },
+    {
+      "id": "esl-colon-comma-splice",
+      "title": "Comma splice after a colon",
+      "sev": "medium",
+      "pattern": ":\\s+\\w+\\s*,\\s+\\w+\\s+(is|are|was|were)\\b",
+      "why": "A colon introduces a clause; joining it with a comma is redundant.",
+      "fix": "Drop the comma after a colon.",
+      "l1": ""
+    },
+    {
+      "id": "esl-apostrophe-plural",
+      "title": "Apostrophe on plural nouns",
+      "sev": "low",
+      "pattern": "\\b(students|engineers|developers|teachers)'s\\s+(work|view|opinion|feedback)\\b",
+      "why": "Plurals never take an apostrophe.",
+      "fix": "Drop the apostrophe: 'students' work'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-very-much-very",
+      "title": "'Very much' used as an intensifier before an adjective",
+      "sev": "low",
+      "pattern": "\\bvery\\s+much\\s+(good|bad|important|easy|hard)\\b",
+      "why": "Use 'very' alone before adjectives, or a stronger single word.",
+      "fix": "Use 'very important' or 'crucial'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-in-order-to",
+      "title": "'In order to' where 'to' suffices (formal register)",
+      "sev": "low",
+      "pattern": "\\bin order to\\b",
+      "why": "Not wrong, but often reads stiffly in an application essay.",
+      "fix": "Prefer 'to' — shorter and more direct.",
+      "l1": ""
+    },
+    {
+      "id": "esl-at-this-point-in-time",
+      "title": "'At this point in time' filler",
+      "sev": "low",
+      "pattern": "\\bat\\s+this\\s+point\\s+in\\s+time\\b|\\bat\\s+the\\s+present\\s+moment\\b",
+      "why": "Filler phrase common in non-native formal writing.",
+      "fix": "Say 'now' or 'currently'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-due-to-the-fact-that",
+      "title": "'Due to the fact that' filler",
+      "sev": "low",
+      "pattern": "\\bdue\\s+to\\s+the\\s+fact\\s+that\\b",
+      "why": "Verbose calque of a single preposition.",
+      "fix": "Use 'because'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-each-other-everyone",
+      "title": "'Each other' used for singular pairs",
+      "sev": "low",
+      "pattern": "\\beveryone\\s+of\\s+the\\s+two\\s+\\w+\\s+with\\s+each\\s+other\\b",
+      "why": "'Each other' is for two; 'everyone' is for three or more.",
+      "fix": "Use 'each other' for two, 'one another' otherwise.",
+      "l1": ""
+    },
+    {
+      "id": "esl-many-times",
+      "title": "'Many times' where 'often' is meant",
+      "sev": "low",
+      "pattern": "\\b(\\w+)\\s+many\\s+times\\b",
+      "why": "Literal translation of a frequentative adverb.",
+      "fix": "Use 'often' or 'frequently'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-since-from-confusion",
+      "title": "'Since' vs 'for' duration confusion",
+      "sev": "medium",
+      "pattern": "\\bfor\\s+since\\b|\\bsince\\s+for\\b",
+      "why": "'for' + duration, 'since' + point in time. The pairing is a frequent slip.",
+      "fix": "'for three years', 'since 2020'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-amount-of-noun-uncountable",
+      "title": "'Amount of' with a countable noun",
+      "sev": "medium",
+      "pattern": "\\bamount\\s+of\\s+(students|people|errors|items|words|files|projects)\\b",
+      "why": "'Amount of' takes uncountables; 'number of' takes countables.",
+      "fix": "Use 'number of' for countable nouns.",
+      "l1": ""
+    },
+    {
+      "id": "esl-succeed-to-do",
+      "title": "'Succeed to do'",
+      "sev": "medium",
+      "pattern": "\\bsucceed\\s+to\\s+(do|make|write|achieve)\\b",
+      "why": "English uses 'succeed in doing' or just 'succeed'.",
+      "fix": "Use 'succeeded in doing' / 'succeeded'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-explain-me",
+      "title": "'Explain me' calque",
+      "sev": "low",
+      "pattern": "\\b(explain|describe|suggest|advise)\\s+me\\b",
+      "why": "Direct translation of a Romance/Germanic calque; English uses the interrogative or a that-clause.",
+      "fix": "Use 'explain to me' or 'can you explain'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-most-speak-english",
+      "title": "'Most speak English' missing 'of them' / 'people'",
+      "sev": "low",
+      "pattern": "\\bmost\\s+(speak|write|read|use|prefer)\\s+\\w+\\b",
+      "why": "Needs an explicit subject: 'most applicants speak'.",
+      "fix": "Add the subject: 'most applicants'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-hollow-preposition-pair",
+      "title": "'Of about' / 'around of' / 'approximately of'",
+      "sev": "medium",
+      "pattern": "\\b(of\\s+about|around\\s+of|approximately\\s+of|more\\s+than\\s+of)\\b",
+      "why": "Double preposition, a very visible calque.",
+      "fix": "Use one: 'about', 'around', 'approximately'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-comma-before-and-in-middle",
+      "title": "Comma before 'and' inside a short phrase",
+      "sev": "low",
+      "pattern": "\\b\\w+,\\s+and\\s+\\w+\\b",
+      "why": "No comma before 'and' joining two short items in a simple list.",
+      "fix": "Drop the comma.",
+      "l1": ""
+    },
+    {
+      "id": "esl-article-with-unique",
+      "title": "Article used with unique/singular identification",
+      "sev": "low",
+      "pattern": "\\bthe\\s+(unique|only|main|primary)\\s+\\w+\\b",
+      "why": "English drops the article with unique/only/main identifiers.",
+      "fix": "Drop 'the': 'the only way' -> 'the only way' is fine, but 'a unique tool' not 'the unique tool'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-present-perfect-vs-past",
+      "title": "Past tense where the situation is still ongoing",
+      "sev": "medium",
+      "pattern": "\\bI\\s+(have|live|study)\\s+at\\s+\\w+\\s+since\\s+\\d{4}\\b",
+      "why": "If the action continues now, English requires the present perfect.",
+      "fix": "Use 'I have lived here since 2020'.",
+      "l1": ""
+    },
+    {
+      "id": "esl-will-future-in-application",
+      "title": "'will' in an application essay where past is meant",
+      "sev": "medium",
+      "pattern": "\\bI\\s+will\\s+(study|do|learn|work|participate)\\s+\\w+",
+      "why": "Applications describe what you have done, not what you will do.",
+      "fix": "Use past tense for completed work.",
+      "l1": ""
+    },
+    {
+      "id": "esl-second-person-in-application",
+      "title": "Second person ('you') in a personal statement",
+      "sev": "medium",
+      "pattern": "\\b(you|your)\\s+(can|should|must|need\\s+to)\\b",
+      "why": "A statement of purpose is first person. 'You' belongs in outreach emails, not in essays.",
+      "fix": "Rewrite in first person.",
+      "l1": ""
+    }
+  ]
+}

@@ -23,11 +23,19 @@ open-sourced it:
 - 44 error-decode rules (paste a trace, get cause + fix + doc link)
 - 27 CWE-aligned security rules (catches AWS/GitHub/Slack keys, shell=True,
   SQL f-strings, verify=False, etc.)
+- 78 ESL->Native rules that explain *why* your English reads non-native —
+  each rule names the writer's first-language cause (Chinese -> no articles,
+  Russian -> article omission + preposition drift, Spanish -> gerund overuse).
+  23 of the 78 are explicitly L1-attributed across 14 language groups.
+
+  The ESL pack is the one generic grammar checkers structurally can't do: they
+  see "I am engineer" as fine, because it *is* fine in English. The point is
+  it isn't what an English native speaker would write, and the rule says so.
 
 Engram principle: let deterministic rules absorb the stable patterns, reserve the
 LLM for the long tail. A rule hit is ~0 cost and 100% explainable.
 
-  pip-able, offline, MIT: https://github.com/wyl743405571-cpu/lint-rules-engine
+  offline, zero-dep, MIT: https://github.com/wyl743405571-cpu/lint-rules-engine
 
 The hosted version (free, no signup) layers the AI on top for everything the
 rules don't catch. Would love feedback on coverage — what error families or CWE
@@ -36,7 +44,7 @@ should be in the pack?
 
 ## 2) Reddit — r/programming
 
-**Title:** I open-sourced the deterministic rule layer behind my dev writing tool (44 error decoders + 27 CWE checks, zero deps)
+**Title:** I open-sourced the deterministic rule layer behind my dev writing tool (44 error decoders + 27 CWE checks + 78 L1-transfer English rules, zero deps)
 
 **Body:** (same core as Show HN, but drop the "Show HN" framing; lead with the
 engineering decision) — paste the Show HN body minus the HN-specific line.
